@@ -1,0 +1,35 @@
+/**
+ * My commodity trading network
+ */
+namespace org.acme.mynetwork
+
+abstract participant Holder identified by id {
+  o String id
+  o String name
+}
+
+participant Company extends Holder {
+}
+
+participant Employee extends Holder {
+  o Integer thanksPoint
+  o Integer virtuePoint
+  --> Company employer
+}
+
+asset Candy identified by id {
+  o String id
+  o DateTime bestBefore
+  --> Holder owner
+}
+
+transaction Thanks {
+  --> Employee sourcer
+  --> Employee destinator
+  o Integer givePointValue
+  o String message
+}
+
+transaction Exchange {
+  --> Employee applicant
+}
