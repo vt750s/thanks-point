@@ -1,9 +1,46 @@
 /**
  * Access control rules for mynetwork
  */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
+rule CompanyRule {
+    description: "Allow company access to all operations for Employee"
+    participant(m): "org.acme.mynetwork.Company"
+    operation: ALL
+    resource(v): "org.acme.mynetwork.Employee"
+    condition: (v.employer.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule EmployeeRule {
+    description: "Allow employee access to read operations for himself"
+    participant(m): "org.acme.mynetwork.Employee"
+    operation: READ
+    resource(v): "org.acme.mynetwork.Employee"
+    condition: (v.getIdentifier() == m.getIdentifier())
+    action: ALLOW 
+}
+
+rule ThanksTransactionCreateRule {
+    description: "Allow employee access to create operations for Thanks when Thanks transaction"
+    participant: "org.acme.mynetwork.Employee"
+    operation: CREATE
+    resource: "org.acme.mynetwork.Thanks"
+    transaction: "org.acme.mynetwork.Thanks"
+    action: ALLOW
+}
+
+rule ThanksTransactionUpdateRule {
+    description: "Allow employee access to read/update for Employee when Thanks transaction"
+    participant(m): "org.acme.mynetwork.Employee"
+    operation: READ, UPDATE
+    resource: "org.acme.mynetwork.Employee"
+    transaction(tx): "org.acme.mynetwork.Thanks"
+    condition: (tx.sourcer.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule AdminRule {
+    description: "Allow admin access to all resources"
+    participant: "org.hyperledger.composer.system.**"
     operation: ALL
     resource: "org.acme.mynetwork.*"
     action: ALLOW
